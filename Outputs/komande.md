@@ -36,7 +36,6 @@ GCF_021442005  1     1     1     1     -     -      -     1*-0%  40*-47%  -     
 GCF_902723695  1     1     1     1     1     1      1     1      2        2       2       4                rmpA2_2*-54%
 GCF_902723705  1     1     1     1     1     1      1     1      2        2       2       4                rmpA2_4*-34%
 GCF_902827215  2     6     5     15    4     9      5     4      82-19%   70-56%  44-11%  5                -
-
 ```
 
 ### 4.4 - uneti *output* komandi, a ne komande
@@ -72,23 +71,63 @@ for file in *.gff; do
  echo "=== $file ==="
  grep -Ei "peg-344|iroB|iucA|rmpA|rmpA2" "$file" | grep 'product=' || echo " (ниједан маркер није пронађен)"
 done
-
 ```
 
 ### 2 - uneti komande
 
 ```bash
-
+BASE_URL="https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/021/057/265/GCF_021057265.1_ASM2105726v1/"
+wget ${BASE_URL}/GCF_021057265.1_ASM2105726v1_genomic.fna.gz
+wget ${BASE_URL}/GCF_021057265.1_ASM2105726v1_genomic.gff.gz
+wget ${BASE_URL}/md5checksums.txt
+wget ${BASE_URL}/uncompressed_checksums.txt
+gunzip -k GCF_021057265.1_ASM2105726v1_genomic.fna.gz ; gunzip -k GCF_021057265.1_ASM2105726v1_genomic.gff.gz
+grep 'GCF_021057265.1_ASM2105726v1_genomic.fna.gz' md5checksums.txt > genome_compressed.txt
+grep 'GCF_021057265.1_ASM2105726v1_genomic.gff.gz' md5checksums.txt >> genome_compressed.txt
+#sledi provera
+md5sum GCF_021057265.1_ASM2105726v1_genomic.gff.gz 
+md5sum GCF_021057265.1_ASM2105726v1_genomic.fna.gz
+#ili 
+md5sum -c genome_compressed.txt 
 ```
 
 ### 3 - uneti komande
 
 ```bash
-
+mkdir {genomes,annotations}
+mv GCF_021057265.1_ASM2105726v1_genomic.fna genomes
+mv GCF_021057265.1_ASM2105726v1_genomic.gff annotations/
+cd ..
+tar -czf klebsiella_genome.tar.gz klebsiella_genome/
 ```
 
 ### 4 - uneti komande i sadrzaj klebsiella_download_archive.sh fajla
 
 ```bash
+mkdir scripts
+touch klebsiella_download_archie.sh
+#kopiramo sve komande u .sh fajl
+chmod +x klebsiella_download_archive.sh
+./klebsiella_download_archive.sh
 
+    #sadrzaj fajla klebsiella_download_archive.sh
+    #!/bin/bash
+
+    BASE_URL="https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/021/057/265/GCF_021057265.1_ASM2105726v1/"
+
+    wget ${BASE_URL}/GCF_021057265.1_ASM2105726v1_genomic.fna.gz
+    wget ${BASE_URL}/GCF_021057265.1_ASM2105726v1_genomic.gff.gz
+    wget ${BASE_URL}/md5checksums.txt
+    wget ${BASE_URL}/uncompressed_checksums.txt
+
+    gunzip -k GCF_021057265.1_ASM2105726v1_genomic.fna.gz
+    gunzip -k GCF_021057265.1_ASM2105726v1_genomic.gff.gz
+
+    mkdir -p {genomes,annotations}
+
+    mv GCF_021057265.1_ASM2105726v1_genomic.fna genomes/
+    mv GCF_021057265.1_ASM2105726v1_genomic.gff annotations/
+
+    cd ..
+    tar -czf klebsiella_genome.tar.gz klebsiella_genome/
 ```
